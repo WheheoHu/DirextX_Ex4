@@ -157,3 +157,13 @@ void SpotLight::Reset(IDirect3DDevice9* _device)
 	_device->SetLight(d_id, &_light);
 	_device->LightEnable(d_id, true);
 }
+
+void SpotLight::thetainc(float theta_inc)
+{
+	_light.Theta += theta_inc;
+}
+
+void SpotLight::thetadec(float theta_dec)
+{
+	_light.Theta -= theta_dec;
+}

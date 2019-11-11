@@ -13,12 +13,12 @@
 
 #include "MyD3D.h"
 
-MyD3D::MyD3D() 
+MyD3D::MyD3D()
 {
-	
+
 }
 
-MyD3D::~MyD3D() 
+MyD3D::~MyD3D()
 {
 
 }
@@ -29,12 +29,12 @@ bool MyD3D::CreateDevice(HINSTANCE hInstance, int _width, int _height)
 	d_width = _width;
 	d_height = _height;
 
-	if(!InitWindow(hInstance, _width, _height,  true))
+	if (!InitWindow(hInstance, _width, _height, true))
 	{
 		MessageBox(0, "InitD3D() - FAILED", 0, 0);
 		return 0;
 	}
-	if(!InitD3D(hInstance, _width, _height,  true, D3DDEVTYPE_HAL, &p_Device))
+	if (!InitD3D(hInstance, _width, _height, true, D3DDEVTYPE_HAL, &p_Device))
 	{
 		MessageBox(0, "InitD3D() - FAILED", 0, 0);
 		return 0;
@@ -47,7 +47,7 @@ bool MyD3D::Initialize()
 {
 	// Initialize VirtualCamera.
 
-	D3DXVECTOR3 position(0.0f, 0.0f, -18.0f);
+	D3DXVECTOR3 position(0.0f, -0.0f, -12.0f);
 	D3DXVECTOR3 target(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 up(0.0f, 1.0f, 0.0f);
 	D3DXMATRIX V;
@@ -55,43 +55,45 @@ bool MyD3D::Initialize()
 	p_Device->SetTransform(D3DTS_VIEW, &V);
 
 	// Set projection matrix.
-	
+
 	D3DXMATRIX proj;
 	D3DXMatrixPerspectiveFovLH(
-			&proj,
-			D3DX_PI * 0.5f, 
-			(float)d_width / (float)d_height,
-			1.0f,
-			1000.0f);
+		&proj,
+		D3DX_PI * 0.5f,
+		(float)d_width / (float)d_height,
+		1.0f,
+		1000.0f);
 	p_Device->SetTransform(D3DTS_PROJECTION, &proj);
 
 
 	//create objects
-	obj_plane_matrial.CreateBuffer(p_Device, 200, 200, 0.1f);
+	/*obj_plane_matrial.CreateBuffer(p_Device, 200, 200, 0.1f);
 	obj_plane_matrial.SetRotation(D3DXVECTOR3(D3DX_PI, 0.0f, 0.0f));
-	obj_plane_matrial.SetTranslation(D3DXVECTOR3(0.0f, 5.0f, 0.0f));
-	
+	obj_plane_matrial.SetTranslation(D3DXVECTOR3(0.0f, 5.0f, 0.0f));*/
+
 	obj_texture_matrial.CreateBuffer(p_Device, 200, 200, 0.1f);
-	obj_texture_matrial.SetTranslation(D3DXVECTOR3(0.0f, -5.0f, 0.0f));
-	
+	obj_texture_matrial.SetTranslation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	obj_texture_matrial.SetRotation(D3DXVECTOR3(-D3DX_PI / 2, 0.0f, 0.0f));
+
 	//Light position
 	light_box.CreateBuffer(p_Device);
-	light_box.v_Translate.x = 3.0f;
-	light_box.v_Translate.y = -2.0f;
+	light_box.v_Translate.x = 0.0f;
+	light_box.v_Translate.y = 0.0f;
+	light_box.v_Translate.z = -3.0f;
 	light_box.SetTranslation(light_box.v_Translate);
 
 	//create light;
 	light_pos = light_box.v_Translate;
 	D3DXCOLOR  _color = D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f);
-	light_point.Initialize(p_Device, 0, light_pos, _color * 0.5f, _color * 0.6f , _color, 8.0f, 1.0f, 1.0f, 1.3f);
-	
+	light_point.Initialize(p_Device, 0, light_pos, _color * 0.5f, _color * 0.6f, _color, 8.0f, 1.0f, 1.0f, 1.3f);
+
 	light_dir = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 	_color = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
 	light_directional.Initialize(p_Device, 1, light_dir, _color * 0.5f, _color * 0.6f, _color);
 
 	_color = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
 	light_dir = D3DXVECTOR3(0.0f, -5.0f, 0.0f) - light_box.v_Translate;
-	light_spot.Initialize(p_Device, 2, light_pos, light_dir, _color, _color, _color, 20.0f, 1.0f, 0.8, 0.9, 
+	light_spot.Initialize(p_Device, 2, light_pos, light_dir, _color, _color, _color, 20.0f, 1.0f, 0.8, 0.9,
 		0.5f, 0.5f, 0.01f);
 
 
@@ -100,56 +102,83 @@ bool MyD3D::Initialize()
 
 void MyD3D::FrameMove(float timeDelta)
 {
-	if (light_box.v_Rotate.y > D3DX_PI * 2)
+	/*if (light_box.v_Rotate.z > D3DX_PI * 2)
 	{
-		light_box.v_Rotate.y = 0.0f;
-	}
-	if (light_box.v_Rotate.y > D3DX_PI * 2)
-	{
-		light_box.v_Rotate.y = 0.0f;
-	}
-	light_box.v_Rotate.y += 0.5f * timeDelta;
+		light_box.v_Rotate.z = 0.0f;
+	}*/
 
-	light_box.SetRotation(light_box.v_Rotate);
-	light_box.SetTranslation(light_box.v_Translate);
-	light_box.m_Transform = light_box.m_Scale * light_box.m_Translate * light_box.m_Rotation;
+	/*light_box.v_Rotate.z += 1.0f* timeDelta;
+
+	light_box.SetRotation(light_box.v_Rotate);*/
+	/*light_box.SetTranslation(light_box.v_Translate);
+	light_box.m_Transform = light_box.m_Scale * light_box.m_Translate * light_box.m_Rotation;*/
 
 	light_pos = light_box.v_Translate;
-	D3DXVec3TransformCoord(&light_pos,&light_pos,&light_box.m_Rotation);
-	light_dir = D3DXVECTOR3(0.0f, -5.0f, 0.0f) - light_pos;
-	
+	D3DXVec3TransformCoord(&light_pos, &light_pos, &light_box.m_Rotation);
+	light_dir = D3DXVECTOR3(0.0f, 0.0f, 5.0f) - light_pos;
+
 	light_point.SetPosition(light_pos);
 	light_point.Reset(p_Device);
+
 	light_spot.SetPosition(light_pos);
-	light_spot.SetDirection(light_dir);
+	
+	static auto temp_dir = light_dir;
+	light_spot.SetDirection(temp_dir);
 	light_spot.Reset(p_Device);
 
-	if (GetAsyncKeyState('D') & 0x8000)
+	if (GetAsyncKeyState('E') & 0x8000)
 		light_directional.Enable(p_Device, true);
 	else
 		light_directional.Enable(p_Device, false);
 
-	if (GetAsyncKeyState('S') & 0x8000)
+	if (GetAsyncKeyState('R') & 0x8000)
 		light_spot.Enable(p_Device, true);
 	else
 		light_spot.Enable(p_Device, false);
 
-	if (GetAsyncKeyState('P') & 0x8000)
+	if (GetAsyncKeyState('T') & 0x8000)
 		light_point.Enable(p_Device, true);
 	else
 		light_point.Enable(p_Device, false);
+
+	if (GetAsyncKeyState('A') & 0x8000) {
+		
+		temp_dir += D3DXVECTOR3(-0.01f, 0.0f, 0.0f);
+		light_spot.SetDirection(temp_dir);
+		light_spot.Reset(p_Device);
+	}
+	
+	
+	if (GetAsyncKeyState('D') & 0x8000) {
+
+		temp_dir += D3DXVECTOR3(0.01f, 0.0f, 0.0f);
+		light_spot.SetDirection(temp_dir);
+		light_spot.Reset(p_Device);
+	}
+	
+
+	if (GetAsyncKeyState('M') & 0x8000) {
+
+		light_spot.thetainc(0.001f);
+	}
+	if (GetAsyncKeyState('N') & 0x8000) {
+
+		light_spot.thetadec(0.001f);
+	}
+
+
 }
 
 bool MyD3D::Render()
 {
-	if( p_Device ) 
+	if (p_Device)
 	{
 		p_Device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xff0000ff, 1.0f, 0);
 		p_Device->BeginScene();
 
-        //drawing 
+		//drawing 
 		obj_texture_matrial.Render(p_Device);
-		obj_plane_matrial.Render(p_Device);
+		//obj_plane_matrial.Render(p_Device);
 		light_box.Render(p_Device);
 
 		p_Device->EndScene();

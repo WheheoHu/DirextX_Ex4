@@ -28,6 +28,7 @@ public:
 	void SetPosition(D3DXVECTOR3 _pos);
 	void Enable(IDirect3DDevice9* _device, bool _state);
 	void Reset(IDirect3DDevice9* _device);
+	
 	D3DLIGHT9		_light;
 	
 protected:
@@ -72,7 +73,8 @@ public:
 	void SetDirection(D3DXVECTOR3 _dir);
 	void Enable(IDirect3DDevice9* _device, bool _state);
 	void Reset(IDirect3DDevice9* _device);
-
+	void thetainc(float theta_inc);
+	void thetadec(float theta_dec);
 	D3DLIGHT9		_light;
 
 protected:
